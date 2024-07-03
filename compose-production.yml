@@ -1,0 +1,13 @@
+services:
+    web:
+        build: .
+        user: "${UID}:${GID}"
+        volumes:
+            - .:/app
+        ports:
+            - '80:80'
+        env_file:
+            - path: .env
+              required: true
+        environment:
+            - DJANGO_SETTINGS_MODULE=blogsite.settings.production

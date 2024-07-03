@@ -15,10 +15,10 @@ Usage
 
 ### Running
 
-Build and deploy the container with
+Build and deploy the development container with
 
 ```bash
-docker compose up -d
+docker compose up -d -f compose-dev.yml
 ```
 
 View to the website with `localhost:8000`
