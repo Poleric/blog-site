@@ -24,4 +24,4 @@ RUN if [ "$DJANGO_SUPERUSER_USERNAME" ]; then \
 
 CMD set -xe; \
     python manage.py migrate --noinput; \
-    gunicorn blogsite.wsgi:application
+    gunicorn apps.blogsite.wsgi:application

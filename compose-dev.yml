@@ -5,7 +5,7 @@ services:
             dockerfile: Dockerfile.dev
         user: "${UID}:${GID}"
         volumes:
-            - .:/app
+            - ./apps:/app/apps
         ports:
             - '8000:8000'
         env_file:
@@ -13,3 +13,5 @@ services:
               required: true
             - path: .env
               required: false
+        environment:
+            - DJANGO_SETTINGS_MODULE=apps.blogsite.settings.dev

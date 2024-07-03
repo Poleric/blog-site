@@ -24,9 +24,9 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 # Application definition
 
 INSTALLED_APPS = [
-    "blog",
-    "home",
-    "search",
+    "apps.blog",
+    "apps.home",
+    "apps.search",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.embeds",
@@ -59,7 +59,7 @@ MIDDLEWARE = [
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 ]
 
-ROOT_URLCONF = "blogsite.urls"
+ROOT_URLCONF = "apps.blogsite.urls"
 
 TEMPLATES = [
     {

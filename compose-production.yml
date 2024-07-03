@@ -1,13 +1,15 @@
 services:
     web:
-        build: .
+        build:
+            context: .
+            dockerfile: Dockerfile.production
         user: "${UID}:${GID}"
         volumes:
-            - .:/app
+            - ./apps:/app/apps
         ports:
             - '80:80'
         env_file:
             - path: .env
               required: true
         environment:
-            - DJANGO_SETTINGS_MODULE=blogsite.settings.production
+            - DJANGO_SETTINGS_MODULE=apps.blogsite.settings.production
