@@ -1,17 +1,23 @@
 FROM python:3.12-alpine
 
+RUN addgroup -S wagtail && adduser -S wagtail -G wagtail
+
 EXPOSE 8000
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PORT=8000
 
-WORKDIR /app
-
 COPY requirements requirements
 RUN pip install -r requirements/prod.txt
 
-COPY . .
+WORKDIR /app
+
+RUN chown wagtail:wagtail /app
+
+COPY --chown=wagtail:wagtail . .
+
+USER wagtail
 
 RUN python manage.py collectstatic --noinput --clear
 
