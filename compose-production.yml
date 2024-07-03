@@ -1,13 +1,10 @@
 services:
     web:
-        build:
-            context: .
-            dockerfile: Dockerfile.production
-        user: "${UID}:${GID}"
+        build: .
         volumes:
             - ./apps:/app/apps
         ports:
-            - '80:80'
+            - '80:8000'
         env_file:
             - path: .env
               required: true
