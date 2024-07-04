@@ -1,2 +1,2 @@
--r dev.txt
+-r base.txt
 gunicorn
