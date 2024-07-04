@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED=1 \
     PORT=8000
 
 COPY requirements requirements
-RUN pip install -r requirements/prod.txt
+RUN pip install --upgrade pip && pip install -r requirements/prod.txt
 
 WORKDIR /app
 
