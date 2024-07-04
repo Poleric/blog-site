@@ -10,13 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+
 import os
+from pathlib import Path
+
+from django.core.exceptions import ImproperlyConfigured
 
 env = os.environ.copy()
 
-PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE_DIR = os.path.dirname(PROJECT_DIR)
+APPS_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = APPS_DIR.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -47,6 +50,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
 ]
 
@@ -58,6 +62,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 ]
 
@@ -67,7 +72,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(PROJECT_DIR, "templates"),
+            APPS_DIR / "templates",
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -81,7 +86,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "blogsite.wsgi.application"
+WSGI_APPLICATION = "apps.blogsite.wsgi.application"
 
 
 # Database
@@ -90,7 +95,7 @@ WSGI_APPLICATION = "blogsite.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        "NAME": APPS_DIR / "db.sqlite3",
     }
 }
 
@@ -135,30 +140,29 @@ STATICFILES_FINDERS = [
 ]
 
 STATICFILES_DIRS = [
-    os.path.join(PROJECT_DIR, "static"),
+    BASE_DIR / "public",
 ]
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = APPS_DIR / "static"
 STATIC_URL = "/static/"
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = APPS_DIR / "media"
 MEDIA_URL = "/media/"
 
-# Default storage settings, with the staticfiles storage updated.
-# See https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-STORAGES
+# ManifestStaticFilesStorage is recommended in production, to prevent outdated
+# JavaScript / CSS assets being served from cache (e.g. after a Wagtail upgrade).
+# See https://docs.djangoproject.com/en/4.0/ref/contrib/staticfiles/#manifeststaticfilesstorage
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
-    # ManifestStaticFilesStorage is recommended in production, to prevent
-    # outdated JavaScript / CSS assets being served from cache
-    # (e.g. after a Wagtail upgrade).
-    # See https://docs.djangoproject.com/en/5.0/ref/contrib/staticfiles/#manifeststaticfilesstorage
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
+# Place static files that need a specific URL (such as robots.txt and favicon.ico) in the "public" folder
+WHITENOISE_ROOT = os.path.join(BASE_DIR, "public")
 
 # Wagtail settings
 
@@ -181,3 +185,104 @@ WAGTAILADMIN_BASE_URL = "http://example.com"
 # if untrusted users are allowed to upload files -
 # see https://docs.wagtail.org/en/stable/advanced_topics/deploying.html#user-uploaded-files
 WAGTAILDOCS_EXTENSIONS = ['csv', 'docx', 'key', 'odt', 'pdf', 'pptx', 'rtf', 'txt', 'xlsx', 'zip']
+
+
+# Email settings
+# We use SMTP to send emails. We typically use transactional email services
+# that let us use SMTP.
+# https://docs.djangoproject.com/en/2.1/topics/email/
+
+# https://docs.djangoproject.com/en/stable/ref/settings/#email-host
+if "EMAIL_HOST" in env:
+    EMAIL_HOST = env["EMAIL_HOST"]
+
+# https://docs.djangoproject.com/en/stable/ref/settings/#email-port
+# Use a default port of 587, as many services now block 25
+try:
+    EMAIL_PORT = int(env.get("EMAIL_PORT", 587))
+except ValueError:
+    raise ImproperlyConfigured("The setting EMAIL_PORT should be an integer, e.g. 587")
+
+# https://docs.djangoproject.com/en/stable/ref/settings/#email-host-user
+if "EMAIL_HOST_USER" in env:
+    EMAIL_HOST_USER = env["EMAIL_HOST_USER"]
+
+# https://docs.djangoproject.com/en/stable/ref/settings/#email-host-password
+if "EMAIL_HOST_PASSWORD" in env:
+    EMAIL_HOST_PASSWORD = env["EMAIL_HOST_PASSWORD"]
+
+# https://docs.djangoproject.com/en/stable/ref/settings/#email-use-tls
+# We always want to use TLS
+EMAIL_USE_TLS = True
+
+
+# https://docs.djangoproject.com/en/stable/ref/settings/#email-subject-prefix
+if "EMAIL_SUBJECT_PREFIX" in env:
+    EMAIL_SUBJECT_PREFIX = env["EMAIL_SUBJECT_PREFIX"]
+
+# SERVER_EMAIL is used to send emails to administrators.
+# https://docs.djangoproject.com/en/stable/ref/settings/#server-email
+# DEFAULT_FROM_EMAIL is used as a default for any mail send from the website to
+# the users.
+# https://docs.djangoproject.com/en/stable/ref/settings/#default-from-email
+if "SERVER_EMAIL" in env:
+    SERVER_EMAIL = DEFAULT_FROM_EMAIL = env["SERVER_EMAIL"]
+
+
+# Logging
+# This logging is configured to be used with Sentry and console logs. Console
+# logs are widely used by platforms offering Docker deployments, e.g. Heroku.
+# https://docs.djangoproject.com/en/stable/topics/logging/
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        # Send logs with at least INFO level to the console.
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        }
+    },
+    "formatters": {
+        "verbose": {
+            "format": "[%(asctime)s][%(process)d][%(levelname)s][%(name)s] %(message)s"
+        }
+    },
+    "loggers": {
+        "wagtailkit_repo_name": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "wagtail": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "django.request": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "django.security": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+    },
+}
+
+
+# Django REST framework settings
+# Change default settings that enable basic auth.
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.SessionAuthentication",
+    )
+}
+
+# This is used by Wagtail's email notifications for constructing absolute
+# URLs. Please set to the domain that users will access the admin site.
+if "PRIMARY_HOST" in env:
+    WAGTAILADMIN_BASE_URL = "https://{}".format(env["PRIMARY_HOST"])
