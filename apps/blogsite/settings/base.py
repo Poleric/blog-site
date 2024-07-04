@@ -30,7 +30,6 @@ BASE_DIR = APPS_DIR.parent
 
 INSTALLED_APPS = [
     "apps.blog",
-    "apps.home",
     "apps.search",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
