@@ -6,5 +6,11 @@ services:
         env_file:
             - path: .env
               required: true
+        volumes:
+            - blog-volume:/app/apps
         environment:
             - DJANGO_SETTINGS_MODULE=apps.blogsite.settings.production
+
+volumes:
+    blog-volume:
+        driver: local
