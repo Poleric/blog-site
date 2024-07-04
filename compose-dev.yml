@@ -10,6 +10,6 @@ services:
             - path: default.env
               required: true
             - path: .env
-              required: false
+              required: true
         environment:
             - DJANGO_SETTINGS_MODULE=apps.blogsite.settings.dev

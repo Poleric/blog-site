@@ -15,13 +15,10 @@ COPY . .
 
 RUN python manage.py collectstatic --noinput --clear
 
-RUN if [ "$DJANGO_SUPERUSER_USERNAME" ]; then \
-        python manage.py createsuperuser \
+CMD set -xe; \
+    python manage.py migrate --noinput; \
+    python manage.py createsuperuser \
             --noinput \
             --username $DJANGO_SUPERUSER_USERNAME \
             --email $DJANGO_SUPERUSER_EMAIL; \
-    fi
-
-CMD set -xe; \
-    python manage.py migrate --noinput; \
     gunicorn apps.blogsite.wsgi:application
