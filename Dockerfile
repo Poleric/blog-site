@@ -1,7 +1,5 @@
 FROM python:3.12-alpine
 
-RUN addgroup -S wagtail && adduser -S wagtail -G wagtail
-
 EXPOSE 8000
 
 ENV PYTHONUNBUFFERED=1 \
@@ -13,11 +11,7 @@ RUN pip install -r requirements/prod.txt
 
 WORKDIR /app
 
-RUN chown wagtail:wagtail /app
-
-COPY --chown=wagtail:wagtail . .
-
-USER wagtail
+COPY . .
 
 RUN python manage.py collectstatic --noinput --clear
 
