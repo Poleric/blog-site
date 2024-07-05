@@ -5,39 +5,15 @@ from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 
+from wagtail.blocks import StreamBlock
 from wagtail.models import Page, Orderable
-from wagtail.fields import RichTextField
+from wagtail.fields import StreamField
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.search import index
-from wagtail.snippets.models import register_snippet
 
 from datetime import datetime
 
 from typing import override
-
-
-class BlogIndexPage(Page):
-    intro = RichTextField(blank=True)
-
-    content_panels = Page.content_panels + [
-        FieldPanel('intro')
-    ]
-
-    @override
-    def get_context(self, request, *args, **kwargs):
-        # Update context to include only published posts, ordered by reverse-chron
-        context = super().get_context(request)
-        blog_pages = self.get_children().live().order_by('-first_published_at')
-        context['blog_pages'] = blog_pages
-        return context
-
-
-class BlogPageTag(TaggedItemBase):
-    content_object = ParentalKey(
-        'BlogPage',
-        related_name='tagged_items',
-        on_delete=models.CASCADE
-    )
 
 
 class BlogTagIndexPage(Page):
@@ -53,19 +29,42 @@ class BlogTagIndexPage(Page):
         return context
 
 
+class BlogPageTag(TaggedItemBase):
+    content_object = ParentalKey(
+        'BlogPage',
+        related_name='tagged_items',
+        on_delete=models.CASCADE
+    )
+
+
+class BlogIndexPage(Page):
+    intro = models.TextField(help_text="Text to describe the page", blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel('intro')
+    ]
+
+    subpage_types = ["BlogPage"]
+
+    def children(self):
+        return self.get_children().specific().live()
+
+    @override
+    def get_context(self, request, *args, **kwargs):
+        # Update context to include only published posts, ordered by reverse-chron
+        context = super().get_context(request)
+        context['blog_pages'] = self.get_children().live().order_by('-last_published_at')
+        return context
+
+
 class BlogPage(Page):
-    published_at = models.DateTimeField(default=datetime.now)
-    intro = models.CharField(max_length=250)
-    body = RichTextField(blank=True)
+    intro = models.TextField(help_text="Text to describe the page", blank=True)
+    body = StreamField(
+        StreamBlock(), verbose_name="Page body", blank=True, use_json_field=True
+    )
     authors = ParentalManyToManyField("blog.Author", blank=True)
     tags = ClusterTaggableManager(through=BlogPageTag, blank=True)
-
-    def main_image(self):
-        gallery_item = self.gallery_images.first()  # noqa
-        if gallery_item:
-            return gallery_item.image
-        else:
-            return None
+    published_at = models.DateTimeField("Date article published", default=datetime.now)
 
     search_fields = Page.search_fields + [
         index.SearchField("intro"),
@@ -83,11 +82,33 @@ class BlogPage(Page):
         InlinePanel("gallery_images", label="Gallery images"),
     ]
 
+    def main_image(self):
+        gallery_item = self.gallery_images.first()  # noqa
+        if gallery_item:
+            return gallery_item.image
+        else:
+            return None
+
+    @property
+    def get_tags(self):
+        """
+        Similar to the authors function above we're returning all the tags that
+        are related to the blog post into a list we can access on the template.
+        We're additionally adding a URL to access BlogPage objects with that tag
+        """
+        tags = self.tags.all()
+        base_url = self.get_parent().url
+        for tag in tags:
+            tag.url = f"{base_url}tags/{tag.slug}/"
+        return tags
+
 
 class BlogPageGalleryImage(Orderable):
     page = ParentalKey(BlogPage, on_delete=models.CASCADE, related_name='gallery_images')
     image = models.ForeignKey(
-        'wagtailimages.Image', on_delete=models.CASCADE, related_name='+'
+        'wagtailimages.Image',
+        on_delete=models.CASCADE,
+        related_name='+'
     )
     caption = models.CharField(blank=True, max_length=250)
 
@@ -97,16 +118,3 @@ class BlogPageGalleryImage(Orderable):
     ]
 
 
-@register_snippet
-class Author(models.Model):
-    name = models.CharField(max_length=100)
-
-    panels = [
-        FieldPanel("name")
-    ]
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name_plural = "Authors"
