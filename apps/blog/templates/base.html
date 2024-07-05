@@ -1,4 +1,4 @@
-{% load static wagtailcore_tags wagtailuserbar %}
+{% load static wagtailcore_tags wagtailuserbar navigation_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -35,7 +35,19 @@
     <body class="{% block body_class %}{% endblock %}">
         {% wagtailuserbar %}
 
+        {% block header %}
+            {% include "includes/header.html" %}
+        {% endblock header %}
+
+        {% block breadcrumbs %}
+            {% breadcrumbs %}
+        {% endblock breadcrumbs %}
+
         {% block content %}{% endblock %}
+
+        <hr>
+
+        {% include "includes/footer.html" %}
 
         {# Global javascript #}
         <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
