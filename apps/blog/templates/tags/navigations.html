@@ -1,0 +1,11 @@
+{% load navigation_tags wagtailcore_tags %}
+
+{% get_site_root as site_root %}
+
+<ul>
+    {% for menu_item in menu_items %}
+        <li class="{{ menu_item.title|lower|cut:" " }}{% if menu_item.active %} active{% endif %}">
+            <a href="{% pageurl menu_item %}">{{ menu_item.title }}</a>
+        </li>
+    {% endfor %}
+</ul>
