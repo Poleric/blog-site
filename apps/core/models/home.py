@@ -34,3 +34,6 @@ class HomePage(Page):
         FieldPanel("body"),
         FieldPanel("socials", widget=forms.CheckboxSelectMultiple),
     ]
+
+    class Meta:
+        verbose_name = "Home Page"

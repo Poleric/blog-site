@@ -25,3 +25,5 @@ class AboutPage(Page):
         FieldPanel("image"),
     ]
 
+    class Meta:
+        verbose_name = "About Page"
