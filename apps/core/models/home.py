@@ -24,7 +24,7 @@ class HomePage(Page):
         blank=True,
         use_json_field=True,
     )
-    socials = ParentalManyToManyField("blog.Social", blank=True)
+    socials = ParentalManyToManyField("core.Social", blank=True)
 
     content_panels = Page.content_panels + [
         MultiFieldPanel([

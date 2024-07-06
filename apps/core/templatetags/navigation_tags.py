@@ -33,7 +33,7 @@ def is_active(page, current_page):
 # Retrieves the top menu items - the immediate children of the parent page
 # The has_menu_children method is necessary because the Foundation menu requires
 # a dropdown class to be applied to a parent
-@register.inclusion_tag("tags/navigations.html", takes_context=True)
+@register.inclusion_tag("../templates/tags/navigations.html", takes_context=True)
 def navigations(context, parent, calling_page=None):
     menu_items = parent.get_children().live().in_menu()
     for menuitem in menu_items:
@@ -54,7 +54,7 @@ def navigations(context, parent, calling_page=None):
     }
 
 
-@register.inclusion_tag("tags/breadcrumbs.html", takes_context=True)
+@register.inclusion_tag("../templates/tags/breadcrumbs.html", takes_context=True)
 def breadcrumbs(context):
     self = context.get("self")
     if self is None or self.depth <= 2:
