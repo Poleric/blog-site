@@ -25,11 +25,13 @@
 
         {# Global stylesheets #}
         <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
-        <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}">
 
         {% block extra_css %}
         {# Override this in templates to add extra stylesheets #}
         {% endblock %}
+
+        <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
     </head>
 
     <body class="{% block body_class %}{% endblock %}">
