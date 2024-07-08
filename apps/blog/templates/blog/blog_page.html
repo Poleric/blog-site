@@ -4,53 +4,65 @@
 
 {% block body_class %}blogpage{% endblock %}
 
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/blog.css' %}">
+{% endblock %}
+
 {% block content %}
-    <h1>{{ page.title }}</h1>
+    <section>
+        <h1>{{ page.title }}</h1>
 
-    <p class="meta">
-        <time datetime="{{ page.published_at|date:"c" }}"
-            title="{{ page.published_at|date:"r" }}">
-            {{ page.published_at|date:"DATE_FORMAT" }}
-        </time>
-    </p>
-
-    {% with authors=page.authors.all %}
-        {% if authors %}
-            <h3>Posted by:</h3>
-            <ul>
-                {% for author in authors %}
-                    <li style="display: inline">
-                        {{ author.name }}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-
-    <div class="intro">{{ page.intro }}</div>
-
-    {{ page.body|richtext }}
-
-    <h2>Gallery</h2>
-    <div style="display: flex; flex-flow: row wrap">
-        {% for item in page.gallery_images.all %}
-            <div style="margin: 10px">
-                {% image item.image fill-320x240 %}
-                <p>{{ item.caption }}</p>
+        <div class="meta">
+            <div>
+                <time datetime="{{ page.published_at|date:"c" }}"
+                    title="{{ page.published_at|date:"r" }}">
+                    {{ page.published_at|date:"DATE_FORMAT" }}
+                </time>
             </div>
-        {% endfor %}
-    </div>
 
-    {% with tags=page.tags.all %}
-        {% if tags %}
-            <div class="tags">
-                <h3>Tags</h3>
-                {% for tag in tags %}
-                    <a href="{% slugurl 'tags' %}?tag={{ tag }}"><button type="button">{{ tag }}</button></a>
-                {% endfor %}
+            <div>
+                {% with authors=page.authors.all %}
+                    {% if authors %}
+                        {% for author in authors %}
+                            {% if author.author_image %}
+                                {{% image author.author_image fill-40x60 %}}
+                            {% endif %}
+                            {{ author.name }}
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+
+        <div class="intro">{{ page.intro }}</div>
+
+        <div class="content">{{ page.body }}</div>
+
+        {% if page.main_image %}
+            <div class="gallery">
+                <h2>Gallery</h2>
+                <div class="gallery-images"></div>
+                    {% for item in page.gallery_images.all %}
+                        <div class="gallery-image">
+                            {% image item.image fill-320x240 %}
+                            <p>{{ item.caption }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         {% endif %}
-    {% endwith %}
 
-    <p><a href="{{ page.get_parent.url }}">Return to blog</a></p>
+        {% with tags=page.tags.all %}
+            {% if tags %}
+                <div class="tags">
+                    <h3>Tags</h3>
+                    {% for tag in tags %}
+                        <a href="{% slugurl 'tags' %}?tag={{ tag }}"><button type="button">{{ tag }}</button></a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div><a href="{{ page.get_parent.url }}">Return to blog</a></div>
+    </section>
 {% endblock %}
