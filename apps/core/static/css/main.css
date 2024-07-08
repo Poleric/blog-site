@@ -42,3 +42,9 @@ form.search {
     clip: rect(0, 0, 0, 0);
     border: 0;
 }
+
+.centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
