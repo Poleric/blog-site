@@ -1,9 +1,10 @@
 from django.db import models
 
-from wagtail.blocks import StreamBlock
+from wagtail import blocks
 from wagtail.models import Page
 from wagtail.fields import StreamField
 from wagtail.admin.panels import FieldPanel
+from wagtail.images.blocks import ImageChooserBlock
 
 
 class AboutPage(Page):
@@ -16,8 +17,11 @@ class AboutPage(Page):
         related_name="+",
         help_text="Landscape mode only; horizontal width between 1000px and 3000px.",
     )
-    body = StreamField(
-        StreamBlock(), verbose_name="Page body", blank=True, use_json_field=True
+    body = StreamField([
+        ('heading', blocks.CharBlock(form_classname="title")),
+        ('paragraph', blocks.RichTextBlock()),
+        ('image', ImageChooserBlock())
+    ], verbose_name="Page body", blank=True, use_json_field=True
     )
     content_panels = Page.content_panels + [
         FieldPanel("intro"),

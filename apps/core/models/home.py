@@ -2,10 +2,12 @@ from django import forms
 from django.db import models
 
 from modelcluster.fields import ParentalManyToManyField
-from wagtail.blocks import StreamBlock
+
+from wagtail import blocks
 from wagtail.models import Page
 from wagtail.fields import StreamField
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel, InlinePanel
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+from wagtail.images.blocks import ImageChooserBlock
 
 
 class HomePage(Page):
@@ -18,11 +20,11 @@ class HomePage(Page):
         related_name="+",
         help_text="Homepage image",
     )
-    body = StreamField(
-        StreamBlock(),
-        verbose_name="Home content block",
-        blank=True,
-        use_json_field=True,
+    body = StreamField([
+        ('heading', blocks.CharBlock(form_classname="title")),
+        ('paragraph', blocks.RichTextBlock()),
+        ('image', ImageChooserBlock())
+    ], verbose_name="Page body", blank=True, use_json_field=True
     )
     socials = ParentalManyToManyField("core.Social", blank=True)
 
