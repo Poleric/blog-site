@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 
-{% load wagtailcore_tags wagtailimages_tags %}
+{% load static wagtailcore_tags wagtailimages_tags %}
 
 {% block body_class %}blogindexpage{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/blog.css' %}">
+{% endblock %}
 
 {% block content %}
     <section class="centered">
@@ -14,15 +18,24 @@
             {% for post in blog_pages %}
                 <div class="blog-post">
                     {% with post=post.specific %}
-                        <h2><a href="{% pageurl post %}">{{ post.title }}</a></h2>
+                        <div class="meta">
+                            <h2><a href="{% pageurl post %}">{{ post.title }}</a></h2>
+                            <time datetime="{{ post.published_at|date:"c" }}"
+                            title="{{ post.published_at|date:"r" }}"
+                            >
+                                {{ post.published_at|date:"DATE_FORMAT" }}
+                            </time>
+                        </div>
 
-                        {% with post.main_image as main_image %}
-                            {% if main_image %}{% image main_image fill-160x100 %}{% endif %}
-                        {% endwith %}
+                        <div class="content">
+                            {% with post.main_image as main_image %}
+                                {% if main_image %}{% image main_image fill-240x160 %}{% endif %}
+                            {% endwith %}
 
-                        {{ post.intro }}
+                            {{ post.intro }}
 
-                        {{ post.body | truncatewords:30}}
+                            {{ post.body | truncatewords:30}}
+                        </div>
                     {% endwith %}
                 </div>
             {% endfor %}
