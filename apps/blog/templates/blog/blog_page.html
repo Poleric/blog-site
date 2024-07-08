@@ -21,14 +21,18 @@
                     </time>
                 </div>
 
-                <div>
+                <div class="authors">
                     {% with authors=page.authors.all %}
                         {% if authors %}
                             {% for author in authors %}
-                                {% if author.author_image %}
-                                    {% image author.author_image fill-60x60 %}
-                                {% endif %}
-                                {{ author.name }}
+
+                                <div class="author">
+                                    {% if author.author_image %}
+                                        {% image author.author_image fill-50x50 %}
+                                    {% endif %}
+                                    {{ author.name }}
+                                </div>
+
                             {% endfor %}
                         {% endif %}
                     {% endwith %}
