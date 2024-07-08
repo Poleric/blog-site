@@ -39,14 +39,16 @@ header .top-header {
         box-sizing: border-box;
 
         & input {
-            height: 1.3rem;
+            padding: 0.2rem;
+
+            height: 1.6rem;
         }
 
         & .search-icon {
             position: absolute;
 
-            right: 0.32rem;
-            top: 0.32rem;
+            right: 0.3rem;
+            top: 0.3rem;
         }
     }
 }
