@@ -47,7 +47,9 @@
 
         <hr>
 
-        {% include "includes/footer.html" %}
+        {% block footer %}
+            {% include "includes/footer.html" %}
+        {% endblock %}
 
         {# Global javascript #}
         <script type="text/javascript" src="{% static 'js/main.js' %}"></script>

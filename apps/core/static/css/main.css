@@ -14,13 +14,36 @@ h3 {
     font-size: 1.6em;
 }
 
-header {
+header, section, footer {
+    > .content {
+        width: clamp(800px, 70%, 100%);
+    }
+}
+
+header .top-header {
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
 
-    > nav {
-        flex-grow: 1;
+    & nav.nav-items {
+        flex-grow: 1
+    }
+
+    /* https://stackoverflow.com/questions/6933941/clickable-icon-inside-input-field */
+    & form.search {
+        position: relative;
+        box-sizing: border-box;
+
+        & input {
+            height: 1.3rem;
+        }
+
+        & .search-icon {
+            position: absolute;
+
+            right: 0.32rem;
+            top: 0.32rem;
+        }
     }
 }
 
@@ -34,12 +57,10 @@ nav {
     }
 }
 
-form.search {
-    > .search-icon {
-        position: absolute;
-        top: 25px;
-        right: 12px;
-    }
+.centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .chevron-icon {
@@ -57,10 +78,4 @@ form.search {
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     border: 0;
-}
-
-.centered {
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }

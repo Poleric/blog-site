@@ -1,7 +1,3 @@
-section {
-    max-width: 1200px;
-}
-
 .authors {
     > .author {
         display: flex;
