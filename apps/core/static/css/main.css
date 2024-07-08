@@ -14,6 +14,10 @@ h3 {
     font-size: 1.6em;
 }
 
+time {
+    font-size: 0.9rem;
+}
+
 header, section, footer {
     > .content {
         width: clamp(800px, 70%, 100%);

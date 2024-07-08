@@ -12,3 +12,32 @@
         }
     }
 }
+
+h1 {
+    margin-bottom: 1rem;
+}
+
+.intro {
+    font-size: 1.3rem;
+}
+
+.blog-post {
+    > .meta {
+        > h2 {
+            margin-bottom: 1rem;
+        }
+    }
+
+    > .content {
+        margin: 1.2rem 0;
+
+        img {
+            float: left;
+            margin-right: 10px;
+
+            border-radius: 5px;
+        }
+
+        width: clamp(800px, 80%, 100%);
+    }
+}
