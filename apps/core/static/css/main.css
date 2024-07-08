@@ -24,33 +24,72 @@ header, section, footer {
     }
 }
 
-header .top-header {
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
+a {
+    text-decoration: none;
+}
 
-    & nav.nav-items {
-        flex-grow: 1
-    }
+body {
+    margin: 0;
+    padding: 0;
+}
 
-    /* https://stackoverflow.com/questions/6933941/clickable-icon-inside-input-field */
-    & form.search {
-        position: relative;
-        box-sizing: border-box;
+:root {
+    --header-bg-color: white;
+    --header-border-color: lightgrey;
+    --footer-bg-color: #afcd00;
+    --footer-border-color: lightgrey;
+}
 
-        & input {
-            padding: 0.2rem;
+header {
+    background-color: var(--header-bg-color);
+    border-bottom: 2px solid var(--header-border-color);
 
-            height: 1.6rem;
+    & .top-header {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+
+        font-weight: bold;
+
+        & .logo {
+            font-size: 2rem;
+            margin-right: 2rem;
         }
 
-        & .search-icon {
-            position: absolute;
+        & nav.nav-items {
+            flex-grow: 1;
+            font-size: 1.2rem;
 
-            right: 0.3rem;
-            top: 0.3rem;
+            & li {
+                margin: 0 2rem;
+            }
+        }
+
+        /* https://stackoverflow.com/questions/6933941/clickable-icon-inside-input-field */
+
+        & form.search {
+            position: relative;
+            box-sizing: border-box;
+
+            & input {
+                padding: 0.2rem;
+
+                height: 1.6rem;
+            }
+
+            & .search-icon {
+                position: absolute;
+
+                right: 0.3rem;
+                top: 0.3rem;
+            }
         }
     }
+}
+
+footer {
+    background-color: var(--footer-bg-color);
+    border-top: 2px solid var(--header-border-color);
 }
 
 nav {
